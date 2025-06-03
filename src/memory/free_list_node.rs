@@ -1,3 +1,4 @@
+use core::ptr::NonNull;
 pub struct FreeListNode {
-    next: Option<Box<FreeListNode>>,
+    pub next: Option<NonNull<FreeListNode>>,
 }
