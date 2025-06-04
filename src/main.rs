@@ -7,7 +7,9 @@ fn main() {
        let mut pool = vec![0u8; PAGE_SIZE * PAGE_COUNT];
    
        // Get the start and end addresses of the pool
+       let test = pool.as_mut_ptr();
        let pool_start = pool.as_mut_ptr() as usize;
+       println!("this is the pool pointer or whatevvvv {:?}", test);
        let pool_end = pool_start + pool.len();
    
        // Initialize the allocator
@@ -18,8 +20,27 @@ fn main() {
        for i in 0..5 {
            let page = allocator.allocate();
            match page {
-               Some(ptr) => println!("Allocated page {} at address: {:p}", i, ptr),
+               Some(ptr) => {
+               
+                println!("Allocated page {} at address: {:p}", i, ptr);
+               let page_addr = ptr.as_ptr() as *mut u8;
+               unsafe { *page_addr = (i + 1) as u8; }
+               }
                None => println!("Failed to allocate page {}", i),
            }
        }
+
+      // Now, print the first byte of each allocated page by calculating the offset
+for i in 0..5 {
+    let page = allocator.allocate();
+    if let Some(ptr) = page {
+        let page_addr = ptr.as_ptr() as usize;
+        let offset = page_addr - pool.as_ptr() as usize;
+        println!(
+            "First byte of allocated page {}: {}",
+            i,
+            pool[offset]
+        );
+    }
+}
 }
